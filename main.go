@@ -324,6 +324,8 @@ func main() {
 		p, err = gandi.NewGandiProvider(ctx, domainFilter, cfg.DryRun)
 	case "safedns":
 		p, err = safedns.NewSafeDNSProvider(domainFilter, cfg.DryRun)
+	case "hosts":
+		p, err = provider.NewHostsProvider(cfg.HostsFile, cfg.DryRun)
 	default:
 		log.Fatalf("unknown dns provider: %s", cfg.Provider)
 	}
