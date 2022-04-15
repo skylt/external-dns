@@ -51,6 +51,7 @@ import (
 	"sigs.k8s.io/external-dns/provider/gandi"
 	"sigs.k8s.io/external-dns/provider/godaddy"
 	"sigs.k8s.io/external-dns/provider/google"
+	"sigs.k8s.io/external-dns/provider/hosts"
 	"sigs.k8s.io/external-dns/provider/infoblox"
 	"sigs.k8s.io/external-dns/provider/inmemory"
 	"sigs.k8s.io/external-dns/provider/linode"
@@ -325,7 +326,7 @@ func main() {
 	case "safedns":
 		p, err = safedns.NewSafeDNSProvider(domainFilter, cfg.DryRun)
 	case "hosts":
-		p, err = provider.NewHostsProvider(cfg.HostsFile, cfg.DryRun)
+		p, err = hosts.NewHostsProvider(ctx, cfg.HostsFile, cfg.DryRun)
 	default:
 		log.Fatalf("unknown dns provider: %s", cfg.Provider)
 	}

@@ -1,12 +1,9 @@
 /*
 Copyright 2019 The Kubernetes Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,31 +11,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package provider
+package hosts
 
 import (
 	"bufio"
 	"fmt"
 	"os"
 	"strings"
+  "context"
 
-	"github.com/kubernetes-incubator/external-dns/endpoint"
-	"github.com/kubernetes-incubator/external-dns/plan"
+  "sigs.k8s.io/external-dns/endpoint"
+	"sigs.k8s.io/external-dns/plan"
+	"sigs.k8s.io/external-dns/provider"
 	log "github.com/sirupsen/logrus"
 )
 
 // HostsProvider is an implementation of Provider for hosts file based Provider.
 type HostsProvider struct {
-	dryRun    bool
+  provider.BaseProvider
+	DryRun   bool
 	hostsFile string
 }
 
 // NewHostsProvider initializes a new hosts file based Provider.
-func NewHostsProvider(hostsFile string, dryRun bool) (Provider, error) {
+func NewHostsProvider(ctx context.Context, hostsFile string, DryRun bool) (*HostsProvider, error) {
 	log.Debugf("NewHostsProvider: hostsFile %s", hostsFile)
 
 	p := &HostsProvider{
-		dryRun:    dryRun,
+		DryRun:    DryRun,
 		hostsFile: hostsFile,
 	}
 
@@ -46,7 +46,7 @@ func NewHostsProvider(hostsFile string, dryRun bool) (Provider, error) {
 }
 
 // ApplyChanges applies a given set of changes in a given zone.
-func (p HostsProvider) ApplyChanges(changes *plan.Changes) error {
+func (p *HostsProvider) ApplyChanges(ctx context.Context, changes *plan.Changes) error {
 	log.Debugf("ApplyChanges")
 
 	f, err := os.Create(p.hostsFile)
@@ -75,7 +75,7 @@ func (p HostsProvider) ApplyChanges(changes *plan.Changes) error {
 }
 
 // Records returns the list of records in a given hosted zone.
-func (p HostsProvider) Records() ([]*endpoint.Endpoint, error) {
+func (p *HostsProvider) Records(ctx context.Context) ([]*endpoint.Endpoint, error) {
 	log.Debugf("Records")
 	var records []*endpoint.Endpoint
 	return records, nil
